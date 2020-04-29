@@ -2,9 +2,12 @@
 #include "stat.h"
 #include "user.h"
 #include "fcntl.h"
+#define M_ADD 0
+#define M_SUBSTRACT 1
+#define M_CHANGE 2
 
 int main(int argc, char *argv[]){
-    int fd,size;
+    int size, mode;
     struct stat st;
     if(argc <= 3){
         printf(1, "Need more than 2 argument\n");
@@ -12,33 +15,53 @@ int main(int argc, char *argv[]){
     }
 
     if(strcmp("-s",argv[1]) == 0){
+        char * charsize = argv[2];
         char * temp;
-        if((temp = strchr(argv[2],'K')) != NULL){
-            *temp = '\0';
-            size = atoi(argv[2]) * 1000;
-        }
-        else if( (temp = strchr(argv[2],'M')) != NULL ){
-            *temp = '\0';
-            size = atoi(argv[2]) * 1000000;
-        }
-        else if( (temp = strchr(argv[2],'G')) != NULL ){
-            *temp = '\0';
-            size = atoi(argv[2]) * 1000000000;
+        int multiplier = 1;
+        if((temp = strchr(argv[2],'+')) != NULL){
+            charsize = charsize + 1;
+            mode = M_ADD;
+        }else if( (temp = strchr(argv[2],'-')) != NULL){
+            charsize = charsize + 1;
+            mode = M_SUBSTRACT;
         }else{
-            size = atoi(argv[2]);
+            mode = M_CHANGE;
+        }
+        if((temp = strchr(charsize,'K')) != NULL){
+            *temp = '\0';
+            multiplier *= 1024;
+        }
+        else if( (temp = strchr(charsize,'M')) != NULL ){
+            *temp = '\0';
+            multiplier *= 1024 * 1024;
+        }
+        else if( (temp = strchr(charsize,'G')) != NULL ){
+            *temp = '\0';
+            multiplier *= 1024 * 1024 * 1024;
         }
 
-        if((fd = open(argv[3],O_CREATE|O_RDWR)) < 0){
-            printf(1,"truncate: cannot open file %s",argv[3]);
+        if( stat(argv[3],&st) < 0){
+            printf(1, "cannot open path %s",argv[3]);
             exit();
+        }
+        size = st.size;
+        switch (mode)
+        {
+            case M_ADD:
+                size += (atoi(charsize) * multiplier);
+                break;
+            
+            case M_SUBSTRACT:
+                size -= (atoi(charsize) * multiplier);
+                if(size < 0) size = 0;
+                break;
+            
+            case M_CHANGE:
+                size = (atoi(charsize) * multiplier);
+                break;
         }
 
-        if(fstat(fd,&st) < 0){
-            printf(1,"truncate: failed reading stat file %s",argv[3]);
-            exit();
-        }
-        //how the fuck do I change the file size
-        close(fd);
+        //size is good, now how the fuck do I truncate
     }
     exit();
 }
