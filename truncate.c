@@ -6,6 +6,42 @@
 #define M_SUBSTRACT 1
 #define M_CHANGE 2
 
+char buf[512];
+
+
+void truncate(char * name,int size)
+{
+    int nowsize = size;
+    int fd0;
+    if( (fd0 = open(name,O_RDONLY)) < 0){
+        printf(1, "cannot open file %s\n",name);
+        exit();
+    }
+    if(unlink(name) < 0){
+        printf(1, "error unlinking %s\n",name);
+        exit();
+    }
+    int fd1;
+    if( (fd1 = open(name,O_CREATE | O_RDWR)) < 0){
+        printf(1, "cannot open file %s\n",name);
+        exit();
+    }
+    int n;
+    while( (n = read(fd0,buf,sizeof(buf))) > 0 && nowsize > 0){
+        if(n > nowsize){
+            n = nowsize;
+        }
+        nowsize -= n;
+        write(fd1, buf, n);
+    }
+    if(nowsize > 0){
+        while(nowsize--){
+            write(fd1,"\0",1);
+        }
+    }
+
+}
+
 int main(int argc, char *argv[]){
     int size, mode;
     struct stat st;
@@ -60,8 +96,8 @@ int main(int argc, char *argv[]){
                 size = (atoi(charsize) * multiplier);
                 break;
         }
-
         //size is good, now how the fuck do I truncate
+        truncate(argv[3],size);
     }
     exit();
 }
