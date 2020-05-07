@@ -98,6 +98,18 @@ int main(int argc, char *argv[]){
         }
         //size is good, now how the fuck do I truncate
         truncate(argv[3],size);
+    }else if(strcmp("--version",argv[1]) == 0){
+        printf(1,"\n");
+        printf(1,"Truncate Version Wibu 1.0\n");
+        printf(1,"\n");
+    }else if(strcmp("--help",argv[1]) == 0){
+        printf(1,"\n");
+        printf(1,"Pakai -s untuk menentukan size\n");
+        printf(1,"bisa menggunakan tanda + atau -\n");
+        printf(1,"bisa menggunakan tanda K,M dan G untuk multiplier size\n");
+        printf(1,"\n");
+        printf(1,"Gunakan --version untuk melihat version");
+        printf(1,"\n");
     }
     exit();
 }
