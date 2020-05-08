@@ -166,6 +166,7 @@ UPROGS=\
 	_zombie\
 	_truncate\
 	_vim\
+	_less\
 
 fs.img: mkfs TEMPTEXT $(UPROGS)
 	./mkfs fs.img TEMPTEXT $(UPROGS)
@@ -238,7 +239,7 @@ EXTRA=\
 	printf.c umalloc.c\
 	TEMPTEXT dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
-	truncate.c vim.c\
+	truncate.c vim.c less.c\
 
 dist:
 	rm -rf dist
