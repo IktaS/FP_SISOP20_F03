@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 
     if(strcmp("-s",argv[1]) == 0){
         if(argc <= 3){
-            printf(1, "Need more than 2 argument\n");
+            printf(1, "Need more than 3 argument, check --help\n");
             exit();
         }
         char * charsize = argv[2];
