@@ -7,6 +7,7 @@
 #define M_CHANGE 2
 
 char buf[512];
+char empty[2];
 
 
 void truncate(char * name,int size)
@@ -34,23 +35,29 @@ void truncate(char * name,int size)
         nowsize -= n;
         write(fd1, buf, n);
     }
+    memset(empty,0,sizeof(empty));
     if(nowsize > 0){
         while(nowsize--){
-            write(fd1,"\0",1);
+            write(fd1,empty,1);
         }
     }
-
+    close(fd0);
+    close(fd1);
 }
 
 int main(int argc, char *argv[]){
     int size, mode;
     struct stat st;
-    if(argc <= 3){
-        printf(1, "Need more than 2 argument\n");
+    if(argc <= 1){
+        printf(1, "Need more argument\n");
         exit();
     }
 
     if(strcmp("-s",argv[1]) == 0){
+        if(argc <= 3){
+            printf(1, "Need more than 2 argument\n");
+            exit();
+        }
         char * charsize = argv[2];
         char * temp;
         int multiplier = 1;
@@ -108,8 +115,10 @@ int main(int argc, char *argv[]){
         printf(1,"bisa menggunakan tanda + atau -\n");
         printf(1,"bisa menggunakan tanda K,M dan G untuk multiplier size\n");
         printf(1,"\n");
-        printf(1,"Gunakan --version untuk melihat version");
+        printf(1,"Gunakan --version untuk melihat version\n");
         printf(1,"\n");
+    }else{
+        printf(1,"Unkown command, gunakan --help untuk melihat command\n");
     }
     exit();
 }
